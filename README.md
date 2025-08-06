@@ -1,6 +1,7 @@
 # PDF Merger
 
 A simple web application built with Flask that allows users to merge multiple PDF files into a single PDF document.
+![Uploading image.png…]()
 
 ## Features
 
