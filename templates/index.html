@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Merger - Merge Multiple PDFs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📄 PDF Merger</h1>
+            <p>Upload multiple PDF files and merge them into a single document</p>
+        </header>
+
+        <main>
+            <!-- Flash messages -->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for message in messages %}
+                            <div class="alert alert-error">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Upload form -->
+            <div class="upload-section">
+                <form method="POST" action="{{ url_for('merge_pdf') }}" enctype="multipart/form-data" id="uploadForm">
+                    <div class="file-input-container">
+                        <label for="pdf_files" class="file-input-label">
+                            <span class="file-input-text">Choose PDF Files</span>
+                            <input type="file" 
+                                   name="pdf_files" 
+                                   id="pdf_files"
+                                   multiple 
+                                   accept=".pdf"
+                                   required>
+                        </label>
+                        <div id="file-list"></div>
+                    </div>
+
+                    <button type="submit" class="merge-btn" id="mergeBtn" disabled>
+                        🔗 Merge PDFs
+                    </button>
+                </form>
+            </div>
+
+            <!-- Instructions -->
+            <div class="instructions">
+                <h3>How to use:</h3>
+                <ol>
+                    <li>Click "Choose PDF Files" to select multiple PDF files</li>
+                    <li>Select at least 2 PDF files (maximum 16MB each)</li>
+                    <li>Click "Merge PDFs" to download the combined document</li>
+                    <li>The merged PDF will be downloaded automatically</li>
+                </ol>
+            </div>
+
+            <!-- Features -->
+            <div class="features">
+                <h3>Features:</h3>
+                <ul>
+                    <li>✅ Merge unlimited PDF files</li>
+                    <li>✅ Preserve original formatting</li>
+                    <li>✅ Fast and secure processing</li>
+                    <li>✅ No file size restrictions (up to 16MB per file)</li>
+                    <li>✅ Download merged PDF instantly</li>
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // JavaScript for enhanced user experience
+        const fileInput = document.getElementById('pdf_files');
+        const fileList = document.getElementById('file-list');
+        const mergeBtn = document.getElementById('mergeBtn');
+        const uploadForm = document.getElementById('uploadForm');
+
+        fileInput.addEventListener('change', function() {
+            const files = this.files;
+            fileList.innerHTML = '';
+            
+            if (files.length > 0) {
+                const listElement = document.createElement('div');
+                listElement.className = 'selected-files';
+                listElement.innerHTML = '<h4>Selected Files:</h4>';
+                
+                for (let i = 0; i < files.length; i++) {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.innerHTML = `
+                        <span class="file-name">${files[i].name}</span>
+                        <span class="file-size">(${(files[i].size / 1024 / 1024).toFixed(2)} MB)</span>
+                    `;
+                    listElement.appendChild(fileItem);
+                }
+                
+                fileList.appendChild(listElement);
+                mergeBtn.disabled = files.length < 2;
+                
+                if (files.length < 2) {
+                    mergeBtn.textContent = `🔗 Select at least 2 PDFs (${files.length} selected)`;
+                } else {
+                    mergeBtn.textContent = `🔗 Merge ${files.length} PDFs`;
+                }
+            } else {
+                mergeBtn.disabled = true;
+                mergeBtn.textContent = '🔗 Merge PDFs';
+            }
+        });
+
+        // Show loading state when form is submitted
+        uploadForm.addEventListener('submit', function() {
+            mergeBtn.disabled = true;
+            mergeBtn.innerHTML = '⏳ Merging PDFs...';
+        });
+    </script>
+</body>
+</html>
